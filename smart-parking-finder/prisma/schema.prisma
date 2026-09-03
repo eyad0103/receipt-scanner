@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  phone         String?
+  role          String    @default("USER")
+  vehiclePlate  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+  bookings  Booking[]
+  reviews   Review[]
+  parkingLots ParkingLot[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model ParkingLot {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  latitude    Float
+  longitude   Float
+  description String?
+  imageUrl    String?
+  totalSpots  Int
+  openHour    String   @default("00:00")
+  closeHour   String   @default("23:59")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  spots    ParkingSpot[]
+  bookings Booking[]
+  reviews  Review[]
+
+  @@map("parking_lots")
+}
+
+model ParkingSpot {
+  id          String   @id @default(cuid())
+  spotNumber  String
+  type        String   @default("STANDARD")
+  status      String   @default("AVAILABLE")
+  pricePerHour Float
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parkingLotId String
+  parkingLot   ParkingLot @relation(fields: [parkingLotId], references: [id], onDelete: Cascade)
+
+  bookings Booking[]
+
+  @@map("parking_spots")
+}
+
+model Booking {
+  id          String   @id @default(cuid())
+  startTime   DateTime
+  endTime     DateTime
+  duration    Int
+  totalPrice  Float
+  status      String   @default("PENDING")
+  paymentStatus String @default("PENDING")
+  paymentIntentId String?
+  vehiclePlate String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  parkingLotId String
+  parkingLot   ParkingLot @relation(fields: [parkingLotId], references: [id], onDelete: Cascade)
+
+  parkingSpotId String
+  parkingSpot   ParkingSpot @relation(fields: [parkingSpotId], references: [id], onDelete: Cascade)
+
+  @@map("bookings")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  parkingLotId String
+  parkingLot   ParkingLot @relation(fields: [parkingLotId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}

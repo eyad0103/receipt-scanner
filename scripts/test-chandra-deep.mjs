@@ -1,0 +1,14 @@
+import fs from "fs";
+import { ChandraProvider } from "../dist/ocr/chandraProvider.js";
+import { parseReceipt } from "../dist/receipt-parser/parser.js";
+const buf = fs.readFileSync("uploads/rcpt_50a3812a.png");
+console.log("testing chandra deep", buf.length);
+const p = new ChandraProvider();
+const t0=Date.now();
+const doc = await p.processImage(buf);
+console.log("done", doc.provider, "elems", doc.elements.length, "time", Date.now()-t0);
+console.log("raw", doc.rawText.slice(0,400).replace(/\n/g," | "));
+const parsed = parseReceipt(doc);
+console.log("parsed merchant", parsed.merchant.value, "items", parsed.items.length, "total", parsed.total.value, "subtotal", parsed.subtotal.value);
+console.log(parsed.items.map(i=> `${i.name}:${i.totalPrice}`).join(" | ").slice(0,500));
+console.log("all lines:", doc.elements.map(e=>e.text).join(" | ").slice(0,500));

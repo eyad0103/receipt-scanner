@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* { font-family: Inter, system-ui, sans-serif; }
+h1,h2,h3 { font-family: "Plus Jakarta Sans", Inter, sans-serif; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 99px; }
+.dark ::-webkit-scrollbar-thumb { background: #334155; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }

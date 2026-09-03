@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #0a0a0f;
+    --surface: #12121a;
+    --surface-secondary: #1a1a24;
+    --border: #2a2a3a;
+    --border-hover: #3a3a4a;
+    --text: #e8e8f0;
+    --text-secondary: #a0a0b0;
+    --text-tertiary: #707080;
+    --focus-ring: #ffffff;
+    --accent-primary: #c8ff00;
+    --accent-secondary: #00d4ff;
+    --accent-tertiary: #ff6b6b;
+  }
+
+  html, body, #root {
+    height: 100%;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-text font-sans antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+  }
+
+  * {
+    @apply border-none outline-none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.15s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-hover);
+  }
+
+  ::selection {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .prose {
+    @apply text-sm text-text;
+
+    & p {
+      @apply mb-4 last:mb-0;
+    }
+
+    & h1, & h2, & h3, & h4, & h5, & h6 {
+      @apply text-text font-semibold tracking-tight;
+    }
+  }
+}

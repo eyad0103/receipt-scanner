@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "types": ["vite/client"]
+  },
+  "include": ["vite.config.ts"]
+}
