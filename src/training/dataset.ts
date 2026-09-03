@@ -30,7 +30,7 @@ export function saveExample(ex: VerifiedExample): void {
   ensureDir();
   const all = loadDataset();
   all.push(ex);
-  fs.writeFileSync(DATA_PATH, JSON.stringify(all.slice(-500), null, 2));
+  fs.writeFileSync(DATA_PATH, JSON.stringify(all.slice(-20000), null, 2));
 }
 
 export function getProductDictionary(): Map<string, number> {

@@ -16,6 +16,8 @@ function closestMatch(input: string, dict: Map<string, number>, maxDist = 2): st
   let bestDist = Infinity;
   let bestFreq = 0;
   for (const [k, freq] of dict) {
+    if (freq < 2) continue;
+    if (k.length < 3 || low.length < 3) continue;
     const d = levenshtein(low, k);
     if (d <= maxDist && (d < bestDist || (d === bestDist && freq > bestFreq))) {
       bestDist = d; bestFreq = freq; best = k;

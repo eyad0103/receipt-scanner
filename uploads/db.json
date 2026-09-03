@@ -302,5 +302,55 @@
     "mime": "image/png",
     "ocrProvider": "tesseract",
     "uploadedAt": "2026-09-03T19:38:39.219Z"
+  },
+  {
+    "id": "rcpt_ee4723de",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-03 172231.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_ee4723de.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-03T19:42:35.197Z"
+  },
+  {
+    "id": "rcpt_68e920e3",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-03 172231.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_68e920e3.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-03T19:44:05.923Z"
+  },
+  {
+    "id": "rcpt_8bcc0f2c",
+    "userId": "user_demo",
+    "originalName": "rcpt_e4073e48.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_8bcc0f2c.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-03T19:50:12.822Z"
+  },
+  {
+    "id": "rcpt_e5dec32d",
+    "userId": "user_demo",
+    "originalName": "rcpt_e4073e48.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_e5dec32d.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-03T19:52:29.832Z"
+  },
+  {
+    "id": "rcpt_1b288fec",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-03 172231.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_1b288fec.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-03T19:56:39.589Z"
   }
 ]
