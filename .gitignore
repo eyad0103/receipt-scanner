@@ -22,3 +22,7 @@ pip-cache/
 __pycache__/
 .pytest_cache/
 *.pyc
+*.exe
+opencode.exe
+*.msi
+*.zip
