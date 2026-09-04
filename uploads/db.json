@@ -352,5 +352,45 @@
     "mime": "image/png",
     "ocrProvider": "tesseract",
     "uploadedAt": "2026-09-03T19:56:39.589Z"
+  },
+  {
+    "id": "rcpt_99176af0",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-03 172231.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_99176af0.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T07:16:13.114Z"
+  },
+  {
+    "id": "rcpt_d90bff82",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-03 172231.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_d90bff82.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T07:22:54.479Z"
+  },
+  {
+    "id": "rcpt_a0241e5b",
+    "userId": "user_demo",
+    "originalName": "WhatsApp Image 2026-09-03 at 4.15.05 PM.jpeg",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_a0241e5b.jpeg",
+    "size": 35323,
+    "mime": "image/jpeg",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T07:24:28.056Z"
+  },
+  {
+    "id": "rcpt_c75d3526",
+    "userId": "user_demo",
+    "originalName": "tight-test.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_c75d3526.png",
+    "size": 34068,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T07:40:50.902Z"
   }
 ]

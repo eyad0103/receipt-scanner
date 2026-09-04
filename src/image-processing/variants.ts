@@ -27,10 +27,55 @@ async function applyJimpVariant(
   }
 }
 
-export async function generateVariants(base: Buffer): Promise<Variant[]> {
-  const variants: Variant[] = [{ name: "original", buffer: base, operations: ["original"] }];
+export async function padWhiteMargin(buffer: Buffer, ratio = 0.06): Promise<Buffer | null> {
+  try {
+    const mod: unknown = await import("jimp" as string).catch(() => null);
+    const mm = mod as { default?: unknown; Jimp?: unknown };
+    const ctor: unknown = mm?.Jimp || mm?.default || mod;
+    const J = ctor as {
+      read: (b: Buffer) => Promise<unknown>;
+      MIME_JPEG?: string;
+      MIME_PNG?: string;
+      new (o: { width: number; height: number; color: number }): unknown;
+    };
+    if (typeof J !== "function" || typeof J.read !== "function") return null;
+    const src = (await J.read(buffer)) as {
+      bitmap: { width: number; height: number };
+      composite: (s: unknown, x: number, y: number) => void;
+    };
+    const w = src.bitmap.width, h = src.bitmap.height;
+    if (!w || !h) return null;
+    const m = Math.max(20, Math.round(Math.min(w, h) * ratio));
+    const canvas = new J({ width: w + 2 * m, height: h + 2 * m, color: 0xffffffff }) as {
+      composite: (s: unknown, x: number, y: number) => void;
+      getBufferAsync?: (mime: string) => Promise<Buffer>;
+      getBuffer?: (mime: string, cb: (e: unknown, b: Buffer) => void) => void;
+    };
+    canvas.composite(src, m, m);
+    const mime = (J as { MIME_JPEG?: string }).MIME_JPEG || "image/jpeg";
+    const cv = canvas as {
+      getBufferAsync?: (m: string) => Promise<Buffer>;
+      getBuffer?: (m: string, cb?: (e: unknown, b: Buffer) => void) => Promise<Buffer> | void;
+    };
+    if (typeof cv.getBufferAsync === "function") return await cv.getBufferAsync(mime);
+    if (typeof cv.getBuffer === "function") {
+      const out = cv.getBuffer(mime) as unknown;
+      if (out && typeof (out as Promise<Buffer>).then === "function") return (await out) as Buffer;
+      if (Buffer.isBuffer(out)) return out as Buffer;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 
-  const enhanced = await applyJimpVariant(base, (img: unknown) => {
+export async function generateVariants(base: Buffer): Promise<Variant[]> {
+  const padded = await padWhiteMargin(base);
+  const src = padded || base;
+  const padOps = padded ? ["white_margin"] : [];
+  const variants: Variant[] = [{ name: "original", buffer: src, operations: [...padOps, "original"] }];
+
+  const enhanced = await applyJimpVariant(src, (img: unknown) => {
     const im = img as {
       grayscale?: () => void;
       greyscale?: () => void;
@@ -59,13 +104,13 @@ export async function generateVariants(base: Buffer): Promise<Variant[]> {
   });
   if (enhanced) variants.push({ name: "enhanced", buffer: enhanced, operations: ["grayscale", "contrast", "normalize", "sharpen", "resize"] });
 
-  const grayscale = await applyJimpVariant(base, (img: unknown) => {
+  const grayscale = await applyJimpVariant(src, (img: unknown) => {
     const im = img as { grayscale?: () => void; greyscale?: () => void };
     try { if (im.grayscale) im.grayscale(); else if (im.greyscale) im.greyscale(); } catch {}
   });
   if (grayscale) variants.push({ name: "grayscale", buffer: grayscale, operations: ["grayscale"] });
 
-  const thresholded = await applyJimpVariant(base, (img: unknown) => {
+  const thresholded = await applyJimpVariant(src, (img: unknown) => {
     const im = img as { grayscale?: () => void; greyscale?: () => void; threshold?: (o: unknown) => void };
     try { if (im.grayscale) im.grayscale(); else if (im.greyscale) im.greyscale(); } catch {}
     try { im.threshold?.({ max: 140, replace: 255, autoGreyscale: false }); } catch {}
