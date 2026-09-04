@@ -12,11 +12,11 @@ export const config = {
   },
   ocr: {
     provider: process.env.OCR_PROVIDER || "tesseract",
-    confidenceThreshold: parseFloat(process.env.OCR_CONFIDENCE_THRESHOLD || "0.7"),
+    confidenceThreshold: parseFloat(process.env.OCR_CONFIDENCE_THRESHOLD || "0"),
   },
   validation: {
-    tolerance: parseFloat(process.env.VALIDATION_TOLERANCE || "0.02"),
-    reviewThreshold: parseFloat(process.env.REVIEW_THRESHOLD || "0.75"),
+    tolerance: parseFloat(process.env.VALIDATION_TOLERANCE || "0"),
+    reviewThreshold: parseFloat(process.env.REVIEW_THRESHOLD || "0"),
   },
   rateLimit: {
     windowMs: 60 * 1000,

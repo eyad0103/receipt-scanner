@@ -70,15 +70,15 @@ export async function assessQuality(buffer: Buffer): Promise<QualityReport> {
   }
 
   if (width < 120 || height < 80 || width * height < 30000) {
-    issues.push({ code: "TOO_SMALL", message: "Receipt is too small in the frame", advice: "Move closer so the receipt fills the screen, then retake.", fatal: true });
+    issues.push({ code: "TOO_SMALL", message: "Receipt is too small in the frame", advice: "Move closer so the receipt fills the screen, then retake.", fatal: false });
   } else if (width < 350 && blur < 60) {
-    issues.push({ code: "TOO_SMALL", message: "Small and soft — text may not survive OCR", advice: "Move closer so the receipt fills the screen, then retake.", fatal: true });
+    issues.push({ code: "TOO_SMALL", message: "Small and soft — text may not survive OCR", advice: "Move closer so the receipt fills the screen, then retake.", fatal: false });
   }
   if (blur < 12) {
-    issues.push({ code: "BLURRY", message: "Photo looks blurry", advice: "Hold steady, tap to focus on the text, and retake.", fatal: mean < 70 });
+    issues.push({ code: "BLURRY", message: "Photo looks blurry", advice: "Hold steady, tap to focus on the text, and retake.", fatal: false });
   }
   if (mean < 60) {
-    issues.push({ code: "TOO_DARK", message: "Photo is too dark", advice: "Turn on flash or move to better light, then retake.", fatal: blur < 12 });
+    issues.push({ code: "TOO_DARK", message: "Photo is too dark", advice: "Turn on flash or move to better light, then retake.", fatal: false });
   }
   if (mean > 215 && std < 25) {
     issues.push({ code: "OVEREXPOSED", message: "Photo looks washed out", advice: "Turn off flash and avoid glare on the paper.", fatal: false });
