@@ -10,6 +10,7 @@ import { computeConfidence, needsReview, validateReceipt } from "../validation/v
 import { validateWithPaddle } from "../validation/paddleValidator";
 import { receiptRepository } from "../repositories/receiptRepository";
 import { detectQrCodes } from "../utils/qrDetector";
+import { withTimeout } from "../utils/timeout";
 import { OcrDocument } from "../models/receipt";
 
 export interface PipelineDebug {
@@ -67,7 +68,11 @@ export class ReceiptService {
       for (const v of variants) {
         let doc: OcrDocument | null = null;
         try {
-          doc = await (lightProvider as { processImage: (b: Buffer) => Promise<OcrDocument> }).processImage(v.buffer);
+          doc = await withTimeout(
+            (lightProvider as { processImage: (b: Buffer) => Promise<OcrDocument> }).processImage(v.buffer),
+            90000,
+            `variant:${v.name}`
+          );
         } catch {
           doc = null;
         }
@@ -98,7 +103,7 @@ export class ReceiptService {
       let finalDoc = ocrDoc;
       if (avgConf < 0.55 || ocrDoc.elements.length < 2) {
         const hw = new HandwritingOcrProvider(this.baseOcr as unknown as import("../ocr/types").OcrProvider);
-        const hwDoc = await hw.processImage(bufferToOcr);
+        const hwDoc = await withTimeout(hw.processImage(bufferToOcr), 90000, "handwriting-fallback");
         const hwAvg = hwDoc.elements.reduce((a, b) => a + b.confidence, 0) / Math.max(1, hwDoc.elements.length);
         if (hwAvg > avgConf) {
           finalDoc = hwDoc;

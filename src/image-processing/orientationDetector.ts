@@ -1,5 +1,7 @@
 import { OcrDocument } from "../models/receipt";
 import { OcrProvider } from "../ocr/types";
+import { downscaleForOcr } from "./variants";
+import { withTimeout } from "../utils/timeout";
 
 export interface OrientationCandidate {
   angle: 0 | 90 | 180 | 270;
@@ -52,11 +54,12 @@ export async function detectBestOrientation(
 ): Promise<{ angle: 0 | 90 | 180 | 270; candidates: OrientationCandidate[]; bestDoc: OcrDocument | null }> {
   const angles: (0 | 90 | 180 | 270)[] = [0, 90, 180, 270];
   const candidates: OrientationCandidate[] = [];
+  const small = await downscaleForOcr(original, 1200);
   for (const angle of angles) {
-    const rotated = await rotateBuffer(original, angle);
+    const rotated = await rotateBuffer(small, angle);
     let doc: OcrDocument | null = null;
     try {
-      doc = await provider.processImage(rotated, opts);
+      doc = await withTimeout(provider.processImage(rotated, opts), 45000, `orientation@${angle}`);
     } catch {
       doc = null;
     }

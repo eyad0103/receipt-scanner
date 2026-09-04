@@ -27,43 +27,74 @@ async function applyJimpVariant(
   }
 }
 
-export async function padWhiteMargin(buffer: Buffer, ratio = 0.06): Promise<Buffer | null> {
+interface JimpImage {
+  bitmap: { width: number; height: number };
+  composite: (s: unknown, x: number, y: number) => void;
+  resize?: (o: { w: number; h: number }) => void;
+  getBufferAsync?: (mime: string) => Promise<Buffer>;
+  getBuffer?: (mime: string) => Promise<Buffer> | void;
+}
+
+interface JimpCtor {
+  read: (b: Buffer) => Promise<JimpImage>;
+  MIME_JPEG?: string;
+  new (o: { width: number; height: number; color: number }): JimpImage;
+}
+
+async function loadJimp(): Promise<JimpCtor | null> {
   try {
     const mod: unknown = await import("jimp" as string).catch(() => null);
     const mm = mod as { default?: unknown; Jimp?: unknown };
-    const ctor: unknown = mm?.Jimp || mm?.default || mod;
-    const J = ctor as {
-      read: (b: Buffer) => Promise<unknown>;
-      MIME_JPEG?: string;
-      MIME_PNG?: string;
-      new (o: { width: number; height: number; color: number }): unknown;
-    };
-    if (typeof J !== "function" || typeof J.read !== "function") return null;
-    const src = (await J.read(buffer)) as {
-      bitmap: { width: number; height: number };
-      composite: (s: unknown, x: number, y: number) => void;
-    };
-    const w = src.bitmap.width, h = src.bitmap.height;
-    if (!w || !h) return null;
-    const m = Math.max(20, Math.round(Math.min(w, h) * ratio));
-    const canvas = new J({ width: w + 2 * m, height: h + 2 * m, color: 0xffffffff }) as {
-      composite: (s: unknown, x: number, y: number) => void;
-      getBufferAsync?: (mime: string) => Promise<Buffer>;
-      getBuffer?: (mime: string, cb: (e: unknown, b: Buffer) => void) => void;
-    };
-    canvas.composite(src, m, m);
-    const mime = (J as { MIME_JPEG?: string }).MIME_JPEG || "image/jpeg";
-    const cv = canvas as {
-      getBufferAsync?: (m: string) => Promise<Buffer>;
-      getBuffer?: (m: string, cb?: (e: unknown, b: Buffer) => void) => Promise<Buffer> | void;
-    };
-    if (typeof cv.getBufferAsync === "function") return await cv.getBufferAsync(mime);
-    if (typeof cv.getBuffer === "function") {
-      const out = cv.getBuffer(mime) as unknown;
+    const ctor = (mm?.Jimp || mm?.default || mod) as JimpCtor;
+    if (typeof ctor !== "function" || typeof ctor.read !== "function") return null;
+    return ctor;
+  } catch {
+    return null;
+  }
+}
+
+async function encodeJimp(J: JimpCtor, img: JimpImage): Promise<Buffer | null> {
+  try {
+    const mime = J.MIME_JPEG || "image/jpeg";
+    if (typeof img.getBufferAsync === "function") return await img.getBufferAsync(mime);
+    if (typeof img.getBuffer === "function") {
+      const out = (await img.getBuffer(mime)) as unknown;
       if (out && typeof (out as Promise<Buffer>).then === "function") return (await out) as Buffer;
       if (Buffer.isBuffer(out)) return out as Buffer;
     }
     return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function downscaleForOcr(buffer: Buffer, maxDim = 1400): Promise<Buffer> {
+  try {
+    const J = await loadJimp();
+    if (!J) return buffer;
+    const src = await J.read(buffer);
+    const w = src.bitmap.width, h = src.bitmap.height;
+    const m = Math.max(w, h);
+    if (!m || m <= maxDim) return buffer;
+    const ratio = maxDim / m;
+    src.resize?.({ w: Math.round(w * ratio), h: Math.round(h * ratio) });
+    return (await encodeJimp(J, src)) || buffer;
+  } catch {
+    return buffer;
+  }
+}
+
+export async function padWhiteMargin(buffer: Buffer, ratio = 0.06): Promise<Buffer | null> {
+  try {
+    const J = await loadJimp();
+    if (!J) return null;
+    const src = await J.read(buffer);
+    const w = src.bitmap.width, h = src.bitmap.height;
+    if (!w || !h) return null;
+    const m = Math.max(20, Math.round(Math.min(w, h) * ratio));
+    const canvas = new J({ width: w + 2 * m, height: h + 2 * m, color: 0xffffffff });
+    canvas.composite(src, m, m);
+    return await encodeJimp(J, canvas);
   } catch {
     return null;
   }

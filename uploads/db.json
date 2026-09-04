@@ -392,5 +392,25 @@
     "mime": "image/png",
     "ocrProvider": "tesseract",
     "uploadedAt": "2026-09-04T07:40:50.902Z"
+  },
+  {
+    "id": "rcpt_a4beeef3",
+    "userId": "user_demo",
+    "originalName": "WhatsApp Image 2026-09-03 at 4.15.05 PM.jpeg",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_a4beeef3.jpeg",
+    "size": 35323,
+    "mime": "image/jpeg",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T10:27:36.123Z"
+  },
+  {
+    "id": "rcpt_d89c5bc5",
+    "userId": "user_demo",
+    "originalName": "big-mock-test.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_d89c5bc5.png",
+    "size": 4473696,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T12:34:08.989Z"
   }
 ]
