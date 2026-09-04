@@ -512,5 +512,25 @@
     "mime": "image/png",
     "ocrProvider": "tesseract",
     "uploadedAt": "2026-09-04T13:18:39.423Z"
+  },
+  {
+    "id": "rcpt_1696489f",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-04 161442.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_1696489f.png",
+    "size": 6424,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:22:47.475Z"
+  },
+  {
+    "id": "rcpt_3ca1f4a8",
+    "userId": "user_demo",
+    "originalName": "rcpt_1696489f.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_3ca1f4a8.png",
+    "size": 6424,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:25:36.785Z"
   }
 ]
