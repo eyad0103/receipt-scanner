@@ -412,5 +412,95 @@
     "mime": "image/png",
     "ocrProvider": "tesseract",
     "uploadedAt": "2026-09-04T12:34:08.989Z"
+  },
+  {
+    "id": "rcpt_21e1827b",
+    "userId": "user_demo",
+    "originalName": "receipt_20260903_094434.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_21e1827b.png",
+    "size": 117818,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T12:42:27.271Z"
+  },
+  {
+    "id": "rcpt_8d619782",
+    "userId": "user_demo",
+    "originalName": "WhatsApp Image 2026-09-03 at 4.15.05 PM.jpeg",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_8d619782.jpeg",
+    "size": 35323,
+    "mime": "image/jpeg",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T12:43:27.202Z"
+  },
+  {
+    "id": "rcpt_bcc5c20a",
+    "userId": "user_demo",
+    "originalName": "WhatsApp Image 2026-09-03 at 4.15.05 PM.jpeg",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_bcc5c20a.jpeg",
+    "size": 35323,
+    "mime": "image/jpeg",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T12:54:30.388Z"
+  },
+  {
+    "id": "rcpt_2e32b860",
+    "userId": "user_demo",
+    "originalName": "receipt_20260902_232045.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_2e32b860.png",
+    "size": 171972,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T12:55:22.552Z"
+  },
+  {
+    "id": "rcpt_f95afe54",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-04 160019.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_f95afe54.png",
+    "size": 4820,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:00:31.500Z"
+  },
+  {
+    "id": "rcpt_d86346ae",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-03 094418.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_d86346ae.png",
+    "size": 182825,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:02:49.128Z"
+  },
+  {
+    "id": "rcpt_26fee7f6",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-04 160019.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_26fee7f6.png",
+    "size": 4820,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:10:29.190Z"
+  },
+  {
+    "id": "rcpt_e14ce95a",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-04 161442.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_e14ce95a.png",
+    "size": 6424,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:14:59.862Z"
+  },
+  {
+    "id": "rcpt_14b3b5f9",
+    "userId": "user_demo",
+    "originalName": "rcpt_f95afe54.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_14b3b5f9.png",
+    "size": 4820,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:15:03.333Z"
   }
 ]

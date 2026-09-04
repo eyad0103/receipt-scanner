@@ -16,8 +16,26 @@ function priceFromText(text: string): number | null {
   return amount;
 }
 
+function stripCurrencyAffix(text: string): string {
+  let t = text
+    .replace(/^\s*[$€£]\s*/, "")
+    .replace(/\s*[$€£]\s*$/, "")
+    .replace(/\s+(EGP|L\.?E\.?|USD|SAR|AED|KWD|QAR|BHD|جنيه|ر\.?س\.?)\s*$/i, "");
+  const pre = t.replace(/^(EGP|L\.?E\.?|USD|SAR|AED|جنيه)\s+/i, "");
+  if (pre !== t && /[A-Za-z\u0600-\u06FF]{2,}.*\d|\d.*[A-Za-z\u0600-\u06FF]{2,}/.test(pre)) t = pre;
+  return t.trim();
+}
+
+function cleanName(name: string): string {
+  return name
+    .replace(/\s*[-–—:]\s*$/g, "")
+    .replace(/^\s*[-–—:]\s*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function parseItemLine(el: OcrElement): ParsedItem | null {
-  let text = el.text.trim();
+  let text = stripCurrencyAffix(el.text.trim());
   if (!text) return null;
   try {
     const { correctProductName } = require("../training/learner");
@@ -25,7 +43,7 @@ function parseItemLine(el: OcrElement): ParsedItem | null {
     if (dict.size > 5) {
       const words = text.split(/\s+/);
       const first = words[0];
-      if (first && first.length >= 3) {
+      if (first && first.length >= 3 && words.length <= 2) {
         const corr = correctProductName(first, dict);
         if (corr.wasCorrected) text = text.replace(first, corr.corrected.charAt(0).toUpperCase() + corr.corrected.slice(1));
       }
@@ -36,7 +54,7 @@ function parseItemLine(el: OcrElement): ParsedItem | null {
 
   const fullMatch = text.match(/^(.*?)\s+(\d+(?:[.,]\d+)?)\s*[x×*]\s*(\d+[.,]\d{2})\s*[=]?\s*(\d+[.,]\d{2})$/i);
   if (fullMatch) {
-    const name = fullMatch[1].trim();
+    const name = cleanName(fullMatch[1]);
     const qty = parseFloat(fullMatch[2].replace(",", "."));
     const unit = parseFloat(fullMatch[3].replace(",", "."));
     const total = parseFloat(fullMatch[4].replace(",", "."));
@@ -46,7 +64,7 @@ function parseItemLine(el: OcrElement): ParsedItem | null {
 
   const qtyTotalMatch = text.match(/^(.*?)\s+(\d+)\s+(\d+[.,]?\d*)$/);
   if (qtyTotalMatch) {
-    const name = qtyTotalMatch[1].trim();
+    const name = cleanName(qtyTotalMatch[1]);
     const qty = parseInt(qtyTotalMatch[2], 10);
     const rawTotal = qtyTotalMatch[3];
     const { amount: total } = normalizePrice(rawTotal);
@@ -59,7 +77,7 @@ function parseItemLine(el: OcrElement): ParsedItem | null {
   const leadingQtyMatch = text.match(/^(\d+)\s+(.*?)\s+(\d+[.,]?\d*)$/);
   if (leadingQtyMatch) {
     const qty = parseInt(leadingQtyMatch[1], 10);
-    const name = leadingQtyMatch[2].trim();
+    const name = cleanName(leadingQtyMatch[2]);
     const rawTotal = leadingQtyMatch[3];
     const { amount: total } = normalizePrice(rawTotal);
     if (name.length < 2 || qty > 100 || total === null) return null;
@@ -70,7 +88,7 @@ function parseItemLine(el: OcrElement): ParsedItem | null {
 
   const simpleMatch = text.match(/^(.*?)\s+(\d+[.,]?\d*)$/);
   if (simpleMatch) {
-    const name = simpleMatch[1].trim();
+    const name = cleanName(simpleMatch[1]);
     const rawTotal = simpleMatch[2];
     const { amount: total } = normalizePrice(rawTotal);
     if (name.length < 2 || total === null) return null;
