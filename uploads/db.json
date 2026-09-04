@@ -652,5 +652,15 @@
     "mime": "image/png",
     "ocrProvider": "tesseract",
     "uploadedAt": "2026-09-04T14:54:00.382Z"
+  },
+  {
+    "id": "rcpt_9dd3c4b3",
+    "userId": "user_demo",
+    "originalName": "rcpt_e4073e48.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_9dd3c4b3.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T15:00:52.326Z"
   }
 ]

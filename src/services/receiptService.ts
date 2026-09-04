@@ -6,7 +6,8 @@ import { HandwritingOcrProvider } from "../ocr/handwritingProvider";
 import { reconstructLines } from "../receipt-parser/lineReconstructor";
 import { classifyLines } from "../receipt-parser/semanticClassifier";
 import { parseReceipt } from "../receipt-parser/parser";
-import { computeConfidence, needsReview, validateReceipt } from "../validation/validator";
+import { computeConfidence, needsReview, reconcileArithmetic, validateReceipt } from 
+"../validation/validator";
 import { validateWithPaddle } from "../validation/paddleValidator";
 import { receiptRepository } from "../repositories/receiptRepository";
 import { detectQrCodes } from "../utils/qrDetector";
@@ -143,6 +144,9 @@ export class ReceiptService {
       const parsed = parseReceipt(finalDoc);
       const validation = validateReceipt(parsed);
       validation.warnings.push(...qualityWarnings);
+      const recon = reconcileArithmetic(parsed);
+      validation.warnings.push(...recon.warnings.map((w) => `[Math] ${w}`));
+      validation.confidenceAdjustment += recon.confidenceBoost;
       let paddleValidation: Awaited<ReturnType<typeof validateWithPaddle>> | null = null;
       try {
         paddleValidation = await validateWithPaddle(finalDoc, parsed, bufferToOcr);
