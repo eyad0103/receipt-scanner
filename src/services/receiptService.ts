@@ -11,6 +11,7 @@ import { validateWithPaddle } from "../validation/paddleValidator";
 import { receiptRepository } from "../repositories/receiptRepository";
 import { detectQrCodes } from "../utils/qrDetector";
 import { withTimeout } from "../utils/timeout";
+import { assessQuality } from "../image-processing/qualityGate";
 import { OcrDocument } from "../models/receipt";
 
 export interface PipelineDebug {
@@ -61,6 +62,16 @@ export class ReceiptService {
       paddleValidation: null,
     };
     try {
+      const quality = await assessQuality(imageBuffer);
+      debugStore.set(receiptId + ":quality", quality as unknown as PipelineDebug);
+      const fatal = quality.issues.filter((i) => i.fatal);
+      if (!quality.passed) {
+        throw new Error(
+          "Photo quality too low: " + fatal.map((i) => `${i.message} — ${i.advice}`).join(" ")
+        );
+      }
+      (debug as { qualityScore?: number }).qualityScore = quality.score;
+      const qualityWarnings = quality.issues.map((i) => `[Photo] ${i.message} ${i.advice}`);
       const baseForOrientation = forcedProvider ? OcrService.create(forcedProvider) : OcrService.create(config.ocr.provider);
       const orientation = await detectBestOrientation(imageBuffer, baseForOrientation as unknown as import("../ocr/types").OcrProvider);
       debug.orientation = { angle: orientation.angle, candidates: orientation.candidates.map((c) => ({ angle: c.angle, score: c.score, metrics: c.metrics })) };
@@ -127,6 +138,7 @@ export class ReceiptService {
 
       const parsed = parseReceipt(finalDoc);
       const validation = validateReceipt(parsed);
+      validation.warnings.push(...qualityWarnings);
       let paddleValidation: Awaited<ReturnType<typeof validateWithPaddle>> | null = null;
       try {
         paddleValidation = await validateWithPaddle(finalDoc, parsed, bufferToOcr);

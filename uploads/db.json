@@ -612,5 +612,35 @@
     "mime": "image/png",
     "ocrProvider": "tesseract",
     "uploadedAt": "2026-09-04T14:07:24.553Z"
+  },
+  {
+    "id": "rcpt_243f19ad",
+    "userId": "user_demo",
+    "originalName": "WhatsApp Image 2026-09-03 at 4.15.05 PM.jpeg",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_243f19ad.jpeg",
+    "size": 35323,
+    "mime": "image/jpeg",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T14:17:00.497Z"
+  },
+  {
+    "id": "rcpt_5c23a2cf",
+    "userId": "user_demo",
+    "originalName": "garbage-test.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_5c23a2cf.png",
+    "size": 794,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T14:42:41.197Z"
+  },
+  {
+    "id": "rcpt_8d942408",
+    "userId": "user_demo",
+    "originalName": "rcpt_1696489f.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_8d942408.png",
+    "size": 6424,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T14:42:41.486Z"
   }
 ]
