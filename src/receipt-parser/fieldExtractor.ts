@@ -40,11 +40,20 @@ export function extractDate(doc: OcrDocument): ScoredField<string | null> {
   return { value: null, confidence: 0.2 };
 }
 
+const MONTHS: Record<string, string> = {
+  jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06",
+  jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12",
+};
+
 function normalizeDate(raw: string): string {
   const m1 = raw.match(/(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
   if (m1) return `${m1[3]}-${m1[2]}-${m1[1]}`;
   const m2 = raw.match(/(\d{4})[\/\-](\d{2})[\/\-](\d{2})/);
   if (m2) return `${m2[1]}-${m2[2]}-${m2[3]}`;
+  const m3 = raw.match(/(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{4})/i);
+  if (m3) return `${m3[3]}-${MONTHS[m3[2].slice(0, 3).toLowerCase()] || "01"}-${m3[1].padStart(2, "0")}`;
+  const m4 = raw.match(/(\d{2})(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(\d{4})/i);
+  if (m4) return `${m4[3]}-${MONTHS[m4[2].slice(0, 3).toLowerCase()] || "01"}-${m4[1]}`;
   return raw;
 }
 

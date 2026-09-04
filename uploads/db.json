@@ -662,5 +662,25 @@
     "mime": "image/png",
     "ocrProvider": "tesseract",
     "uploadedAt": "2026-09-04T15:00:52.326Z"
+  },
+  {
+    "id": "rcpt_beca2a73",
+    "userId": "user_demo",
+    "originalName": "WhatsApp Image 2026-09-03 at 4.15.05 PM.jpeg",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_beca2a73.jpeg",
+    "size": 35323,
+    "mime": "image/jpeg",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T15:48:51.674Z"
+  },
+  {
+    "id": "rcpt_b4ed20cc",
+    "userId": "user_demo",
+    "originalName": "receipt_20260903_094434.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_b4ed20cc.png",
+    "size": 117818,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T15:49:55.765Z"
   }
 ]

@@ -2,11 +2,11 @@ import { OcrDocument, ParsedReceipt } from "../models/receipt";
 import { extractCurrency, extractDate, extractMerchant, extractMoneyFieldFromLines, extractPaymentMethod, extractReceiptNumber, extractTime } from "./fieldExtractor";
 import { parseItemsFromLines } from "./itemParser";
 import { isDiscountLine, isTaxLine, isTotalLine, isSubtotalLine } from "./patterns";
-import { reconstructLines } from "./lineReconstructor";
+import { associateColumns, reconstructLines } from "./lineReconstructor";
 import { classifyLines } from "./semanticClassifier";
 
 export function parseReceipt(doc: OcrDocument): ParsedReceipt {
-  const lines = reconstructLines(doc.elements);
+  const lines = associateColumns(reconstructLines(doc.elements));
   const classified = classifyLines(lines);
 
   const merchant = extractMerchant(doc);
@@ -16,7 +16,23 @@ export function parseReceipt(doc: OcrDocument): ParsedReceipt {
   const items = parseItemsFromLines(classified, doc);
 
   const subtotal = extractMoneyFieldFromLines(classified, isSubtotalLine);
-  const tax = extractMoneyFieldFromLines(classified, isTaxLine);
+  let tax = extractMoneyFieldFromLines(classified, isTaxLine);
+  if (tax.value !== null) {
+    const taxIdx = classified.findIndex((l) => isTaxLine(l.text));
+    const taxLine = taxIdx >= 0 ? classified[taxIdx].text : "";
+    if (taxIdx >= 0 && (isSubtotalLine(taxLine) || (subtotal.value !== null && tax.value === subtotal.value))) {
+      for (let i = taxIdx + 1; i < Math.min(classified.length, taxIdx + 4); i++) {
+        const m = classified[i].text.trim().match(/^[$€£]?\s*(\d+[.,]\d{2})\s*$/);
+        if (m && !isTotalLine(classified[i].text) && !isSubtotalLine(classified[i].text)) {
+          const v = parseFloat(m[1].replace(",", "."));
+          if (!isNaN(v) && v > 0 && v < 100000) {
+            tax = { value: Math.round(v * 100) / 100, confidence: classified[i].confidence * 0.7 };
+            break;
+          }
+        }
+      }
+    }
+  }
   const discount = extractMoneyFieldFromLines(classified, isDiscountLine);
   let total = extractMoneyFieldFromLines(classified, isTotalLine);
 

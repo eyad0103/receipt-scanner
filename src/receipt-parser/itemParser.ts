@@ -31,6 +31,8 @@ function cleanName(name: string): string {
   return name
     .replace(/\s*[-–—:]\s*$/g, "")
     .replace(/^\s*[-–—:]\s*/g, "")
+    .replace(/^\s*[>•*+]\s*/, "")
+    .replace(/^\d{1,2}[.)]\s+(?=[A-Za-z\u0600-\u06FF])/, "")
     .replace(/\s+/g, " ")
     .trim();
 }
