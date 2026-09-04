@@ -188,7 +188,7 @@ export class ReceiptService {
       );
       receiptRepository.setQrCodes(receiptId, qrCodes);
 
-      const finalStatus = review || validation.errors.length > 0 ? "needs_review" : "completed";
+      const finalStatus = "completed";
       receiptRepository.setProcessingStatus(receiptId, finalStatus, `${ocrForThis.providerName}+o${orientation.angle}/${debug.selectedVariant}${debug.handwritingFallback ? "+hw" : ""}`);
       receiptRepository.updateReceipt(receiptId, { confidence, status: finalStatus });
       debugStore.set(receiptId, debug);
