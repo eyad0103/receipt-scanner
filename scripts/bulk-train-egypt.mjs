@@ -57,7 +57,13 @@ for(let i=0;i<COUNT;i++){
     items.push({ name, quantity: Math.random()<0.6?1:2, totalPrice: price });
   }
   const total = Math.round(items.reduce((a,b)=>a+b.totalPrice,0)*100)/100;
-  const ocrLines = [noisify(m), ...items.map(it=>`${noisify(it.name)} ${noisify(it.totalPrice.toFixed(2))}`), `${noisify("TOTAL")} ${noisify(total.toFixed(2))}`];
+  const ocrLines = [noisify(m), ...items.map(it=>{
+    const p = noisify(it.totalPrice.toFixed(2));
+    const r = Math.random();
+    if (it.quantity > 1 && r < 0.45) return `${it.quantity} x ${noisify(it.name)} ${p}`;
+    if (it.quantity > 1 && r < 0.8) return `${noisify(it.name)} ${it.quantity} ${p}`;
+    return `${noisify(it.name)} ${p}`;
+  }), `${noisify("TOTAL")} ${noisify(total.toFixed(2))}`];
   all.push({
     id: `egy10k_${Date.now()}_${i}`,
     ocrText: ocrLines.join("\n"),

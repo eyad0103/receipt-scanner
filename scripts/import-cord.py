@@ -60,7 +60,7 @@ for split in ("train", "validation", "test"):
         total = round(sum(p for _, _, p in items), 2)
         allx.append({
             "id": f"cord_{split}_{r['id']}",
-            "ocrText": "\n".join(f"{n} {p}" for n, _, p in items),
+            "ocrText": "\n".join(f"{q} x {n} {p}" if q > 1 else f"{n} {p}" for n, q, p in items),
             "ocrElements": [{"text": n, "confidence": 0.95} for n, _, _ in items],
             "corrected": {
                 "merchant": None,
