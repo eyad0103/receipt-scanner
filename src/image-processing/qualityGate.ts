@@ -69,6 +69,9 @@ export async function assessQuality(buffer: Buffer): Promise<QualityReport> {
     return { score: 50, width, height, meanBrightness: mean, blurVariance: blur, contrastStd: std, receiptCoverage: coverage, issues, passed: true };
   }
 
+  // ALL QUALITY CHECKS MADE NON-FATAL: OCR should run on all images,
+  // even those with quality issues. Warnings are still tracked but
+  // cannot block OCR. Quality score reflects the image conditions.
   if (width < 120 || height < 80 || width * height < 30000) {
     issues.push({ code: "TOO_SMALL", message: "Receipt is too small in the frame", advice: "Move closer so the receipt fills the screen, then retake.", fatal: false });
   } else if (width < 350 && blur < 60) {
@@ -90,7 +93,11 @@ export async function assessQuality(buffer: Buffer): Promise<QualityReport> {
     issues.push({ code: "RECEIPT_TINY", message: "Receipt may be too far away", advice: "Move closer so the receipt fills most of the frame.", fatal: false });
   }
 
+  // ALWAYS pass: OCR should run on all images, not blocked by quality
   const fatal = issues.some((i) => i.fatal);
-  const score = Math.max(0, Math.min(100, Math.round(100 - issues.length * 18 - (fatal ? 30 : 0))));
-  return { score, width, height, meanBrightness: Math.round(mean), blurVariance: Math.round(blur), contrastStd: Math.round(std), receiptCoverage: Math.round(coverage * 100) / 100, issues, passed: !fatal };
+  // Force passed to always true: quality issues do not block OCR
+  const passed = true;
+  // Score reflects quality but cannot block OCR
+  const score = Math.max(0, Math.min(100, Math.round(100 - issues.length * 5)));
+  return { score, width, height, meanBrightness: Math.round(mean), blurVariance: Math.round(blur), contrastStd: Math.round(std), receiptCoverage: Math.round(coverage * 100) / 100, issues, passed };
 }
