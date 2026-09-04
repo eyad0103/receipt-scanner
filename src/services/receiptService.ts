@@ -12,6 +12,7 @@ import { receiptRepository } from "../repositories/receiptRepository";
 import { detectQrCodes } from "../utils/qrDetector";
 import { withTimeout } from "../utils/timeout";
 import { assessQuality } from "../image-processing/qualityGate";
+import { detectReceiptBounds } from "../image-processing/boundaryCrop";
 import { OcrDocument } from "../models/receipt";
 
 export interface PipelineDebug {
@@ -72,10 +73,13 @@ export class ReceiptService {
       }
       (debug as { qualityScore?: number }).qualityScore = quality.score;
       const qualityWarnings = quality.issues.map((i) => `[Photo] ${i.message} ${i.advice}`);
+      const bounds = await detectReceiptBounds(imageBuffer);
+      (debug as { receiptBounds?: unknown }).receiptBounds = bounds.bounds;
+      const framed = bounds.bounds.cropped ? bounds.buffer : imageBuffer;
       const baseForOrientation = forcedProvider ? OcrService.create(forcedProvider) : OcrService.create(config.ocr.provider);
-      const orientation = await detectBestOrientation(imageBuffer, baseForOrientation as unknown as import("../ocr/types").OcrProvider);
+      const orientation = await detectBestOrientation(framed, baseForOrientation as unknown as import("../ocr/types").OcrProvider);
       debug.orientation = { angle: orientation.angle, candidates: orientation.candidates.map((c) => ({ angle: c.angle, score: c.score, metrics: c.metrics })) };
-      const oriented = await correctOrientation(imageBuffer, orientation.angle);
+      const oriented = await correctOrientation(framed, orientation.angle);
 
       const variants = await generateVariants(oriented);
       const scored: Array<{ variant: (typeof variants)[number]; doc: OcrDocument | null; score: number }> = [];
