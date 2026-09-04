@@ -31,8 +31,12 @@ export function getPipelineDebug(receiptId: string): PipelineDebug | undefined {
   return debugStore.get(receiptId);
 }
 
+function isMockDoc(doc: OcrDocument | null): boolean {
+  return !!doc && (doc.provider || "").toLowerCase().includes("mock");
+}
+
 function scoreDoc(doc: OcrDocument | null): number {
-  if (!doc || doc.elements.length === 0) return 0;
+  if (!doc || doc.elements.length === 0 || isMockDoc(doc)) return 0;
   const avg = doc.elements.reduce((a, b) => a + b.confidence, 0) / doc.elements.length;
   const words = doc.elements.filter((e) => /[A-Za-z\u0600-\u06FF]{2,}/.test(e.text)).length;
   const nums = (doc.rawText.match(/\d+[.,]?\d*/g) || []).length;
@@ -86,8 +90,8 @@ export class ReceiptService {
       let ocrDoc: OcrDocument | null = best?.doc || null;
       let bufferToOcr = best?.variant.buffer || oriented;
 
-      if (!ocrDoc || ocrDoc.elements.length === 0) {
-        ocrDoc = orientation.bestDoc;
+      if (!ocrDoc || ocrDoc.elements.length === 0 || isMockDoc(ocrDoc)) {
+        ocrDoc = isMockDoc(orientation.bestDoc) ? null : orientation.bestDoc;
         bufferToOcr = oriented;
       }
       if (!ocrDoc) throw new Error("OCR produced no text");

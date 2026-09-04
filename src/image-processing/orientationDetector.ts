@@ -17,7 +17,7 @@ export interface OrientationCandidate {
 }
 
 function scoreDocument(doc: OcrDocument | null): number {
-  if (!doc || doc.elements.length === 0) return 0;
+  if (!doc || doc.elements.length === 0 || (doc.provider || "").toLowerCase().includes("mock")) return 0;
   const regions = doc.elements.length;
   const avgConf = doc.elements.reduce((a, b) => a + b.confidence, 0) / regions;
   const wordCount = doc.elements.filter((e) => /[A-Za-z\u0600-\u06FF]{2,}/.test(e.text)).length;

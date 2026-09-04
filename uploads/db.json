@@ -532,5 +532,85 @@
     "mime": "image/png",
     "ocrProvider": "tesseract",
     "uploadedAt": "2026-09-04T13:25:36.785Z"
+  },
+  {
+    "id": "rcpt_29b204a3",
+    "userId": "user_demo",
+    "originalName": "Screenshot 2026-09-04 162832.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_29b204a3.png",
+    "size": 5766,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:28:40.956Z"
+  },
+  {
+    "id": "rcpt_09ed0219",
+    "userId": "user_demo",
+    "originalName": "dark-test.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_09ed0219.png",
+    "size": 794,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:37:19.086Z"
+  },
+  {
+    "id": "rcpt_c4273893",
+    "userId": "user_demo",
+    "originalName": "dark-test.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_c4273893.png",
+    "size": 794,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:38:49.572Z"
+  },
+  {
+    "id": "rcpt_5d91461e",
+    "userId": "user_demo",
+    "originalName": "dark-test.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_5d91461e.png",
+    "size": 794,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:43:05.570Z"
+  },
+  {
+    "id": "rcpt_423a12b1",
+    "userId": "user_demo",
+    "originalName": "rcpt_e4073e48.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_423a12b1.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:54:13.965Z"
+  },
+  {
+    "id": "rcpt_ec7a9286",
+    "userId": "user_demo",
+    "originalName": "rcpt_f95afe54.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_ec7a9286.png",
+    "size": 4820,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T13:54:14.288Z"
+  },
+  {
+    "id": "rcpt_698555fd",
+    "userId": "user_demo",
+    "originalName": "rcpt_e4073e48.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_698555fd.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T14:03:32.640Z"
+  },
+  {
+    "id": "rcpt_0b503ca3",
+    "userId": "user_demo",
+    "originalName": "rcpt_e4073e48.png",
+    "savedPath": "F:\\receipt-scanner\\uploads\\rcpt_0b503ca3.png",
+    "size": 30635,
+    "mime": "image/png",
+    "ocrProvider": "tesseract",
+    "uploadedAt": "2026-09-04T14:07:24.553Z"
   }
 ]

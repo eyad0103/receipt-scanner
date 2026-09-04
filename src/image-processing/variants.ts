@@ -10,18 +10,14 @@ export interface Variant {
 
 async function applyJimpVariant(
   buffer: Buffer,
-  ops: (img: unknown) => void
+  ops: (img: JimpImage) => void
 ): Promise<Buffer | null> {
   try {
-    const mod: unknown = await import("jimp" as string).catch(() => null);
-    const Jimp: unknown = (mod as { default?: unknown; Jimp?: unknown })?.default || (mod as { Jimp?: unknown })?.Jimp || mod;
-    if (!Jimp || typeof (Jimp as { read?: unknown }).read !== "function") return null;
-    const J = Jimp as { read: (b: Buffer) => Promise<unknown>; MIME_JPEG?: string };
-    const img: unknown = await J.read(buffer);
+    const J = await loadJimp();
+    if (!J) return null;
+    const img = await J.read(buffer);
     ops(img);
-    const mime = J.MIME_JPEG || "image/jpeg";
-    const out = await (img as { getBufferAsync: (m: string) => Promise<Buffer> }).getBufferAsync(mime);
-    return out;
+    return await encodeJimp(J, img);
   } catch {
     return null;
   }
@@ -31,6 +27,10 @@ interface JimpImage {
   bitmap: { width: number; height: number };
   composite: (s: unknown, x: number, y: number) => void;
   resize?: (o: { w: number; h: number }) => void;
+  greyscale?: () => void;
+  normalize?: () => void;
+  contrast?: (n: number) => void;
+  brightness?: (n: number) => void;
   getBufferAsync?: (mime: string) => Promise<Buffer>;
   getBuffer?: (mime: string) => Promise<Buffer> | void;
 }
@@ -41,7 +41,7 @@ interface JimpCtor {
   new (o: { width: number; height: number; color: number }): JimpImage;
 }
 
-async function loadJimp(): Promise<JimpCtor | null> {
+export async function loadJimp(): Promise<JimpCtor | null> {
   try {
     const mod: unknown = await import("jimp" as string).catch(() => null);
     const mm = mod as { default?: unknown; Jimp?: unknown };
@@ -53,7 +53,7 @@ async function loadJimp(): Promise<JimpCtor | null> {
   }
 }
 
-async function encodeJimp(J: JimpCtor, img: JimpImage): Promise<Buffer | null> {
+export async function encodeJimp(J: JimpCtor, img: JimpImage): Promise<Buffer | null> {
   try {
     const mime = J.MIME_JPEG || "image/jpeg";
     if (typeof img.getBufferAsync === "function") return await img.getBufferAsync(mime);
@@ -100,53 +100,61 @@ export async function padWhiteMargin(buffer: Buffer, ratio = 0.06): Promise<Buff
   }
 }
 
+export async function normalizeDarkImage(buffer: Buffer): Promise<{ buffer: Buffer; brightened: boolean }> {
+  try {
+    const J = await loadJimp();
+    if (!J) return { buffer, brightened: false };
+    const src = await J.read(buffer);
+    const w = src.bitmap.width, h = src.bitmap.height;
+    const data = (src.bitmap as unknown as { data: Uint8Array }).data;
+    const step = Math.max(1, Math.floor((w * h) / 20000));
+    let sum = 0, n = 0;
+    for (let i = 0; i < w * h; i += step) {
+      const o = i * 4;
+      sum += 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
+      n++;
+    }
+    const mean = sum / Math.max(1, n);
+    if (mean >= 100) return { buffer, brightened: false };
+    const amt = Math.min(0.6, (100 - mean) / 100 + 0.15);
+    (src as unknown as { brightness?: (n: number) => void }).brightness?.(amt);
+    const out = await encodeJimp(J, src);
+    return out ? { buffer: out, brightened: true } : { buffer, brightened: false };
+  } catch {
+    return { buffer, brightened: false };
+  }
+}
+
 export async function generateVariants(base: Buffer): Promise<Variant[]> {
-  const padded = await padWhiteMargin(base);
-  const src = padded || base;
-  const padOps = padded ? ["white_margin"] : [];
+  const norm = await normalizeDarkImage(base);
+  const padded = await padWhiteMargin(norm.buffer);
+  const src = padded || norm.buffer;
+  const padOps = [...(norm.brightened ? ["auto_brighten"] : []), ...(padded ? ["white_margin"] : [])];
   const variants: Variant[] = [{ name: "original", buffer: src, operations: [...padOps, "original"] }];
 
-  const enhanced = await applyJimpVariant(src, (img: unknown) => {
-    const im = img as {
-      grayscale?: () => void;
-      greyscale?: () => void;
-      contrast: (n: number) => void;
-      normalize: () => void;
-      convolute?: (k: number[][]) => void;
-      brightness?: (n: number) => void;
-      resize?: (o: { w: number; h: number }) => void;
-      bitmap: { width: number; height: number };
-    };
+  const normalized = await applyJimpVariant(src, (img) => {
+    try { img.normalize?.(); } catch {}
+  });
+  if (normalized) variants.push({ name: "enhanced", buffer: normalized, operations: [...padOps, "normalize"] });
+
+  const grayNorm = await applyJimpVariant(src, (img) => {
+    try { img.greyscale?.(); } catch {}
+    try { img.normalize?.(); } catch {}
+  });
+  if (grayNorm) variants.push({ name: "grayscale", buffer: grayNorm, operations: [...padOps, "greyscale", "normalize"] });
+
+  const gentle = await applyJimpVariant(src, (img) => {
+    try { img.greyscale?.(); } catch {}
+    try { img.contrast?.(0.1); } catch {}
+    try { img.normalize?.(); } catch {}
     try {
-      if (im.grayscale) im.grayscale();
-      else if (im.greyscale) im.greyscale();
-    } catch {}
-    try { im.contrast(0.18); } catch {}
-    try { if (im.normalize) im.normalize(); } catch {}
-    try {
-      if (im.convolute) im.convolute([[0, -1, 0], [-1, 5, -1], [0, -1, 0]]);
-    } catch {}
-    try {
-      if (im.bitmap.width < 1600) {
-        const ratio = 1600 / im.bitmap.width;
-        im.resize?.({ w: 1600, h: Math.round(im.bitmap.height * ratio) });
+      if (img.bitmap.width < 800) {
+        const ratio = 1200 / img.bitmap.width;
+        img.resize?.({ w: 1200, h: Math.round(img.bitmap.height * ratio) });
       }
     } catch {}
   });
-  if (enhanced) variants.push({ name: "enhanced", buffer: enhanced, operations: ["grayscale", "contrast", "normalize", "sharpen", "resize"] });
-
-  const grayscale = await applyJimpVariant(src, (img: unknown) => {
-    const im = img as { grayscale?: () => void; greyscale?: () => void };
-    try { if (im.grayscale) im.grayscale(); else if (im.greyscale) im.greyscale(); } catch {}
-  });
-  if (grayscale) variants.push({ name: "grayscale", buffer: grayscale, operations: ["grayscale"] });
-
-  const thresholded = await applyJimpVariant(src, (img: unknown) => {
-    const im = img as { grayscale?: () => void; greyscale?: () => void; threshold?: (o: unknown) => void };
-    try { if (im.grayscale) im.grayscale(); else if (im.greyscale) im.greyscale(); } catch {}
-    try { im.threshold?.({ max: 140, replace: 255, autoGreyscale: false }); } catch {}
-  });
-  if (thresholded) variants.push({ name: "thresholded", buffer: thresholded, operations: ["grayscale", "threshold"] });
+  if (gentle) variants.push({ name: "thresholded", buffer: gentle, operations: [...padOps, "greyscale", "contrast", "normalize", "resize-if-small"] });
 
   return variants;
 }
